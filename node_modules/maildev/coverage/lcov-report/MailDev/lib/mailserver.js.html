@@ -1,0 +1,1751 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for MailDev/lib/mailserver.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">all files</a> / <a href="index.html">MailDev/lib/</a> mailserver.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">60.49% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>147/243</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">41.18% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>42/102</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">56.6% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>30/53</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">62.93% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>146/232</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line medium'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">40×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&nbsp;
+/**
+ * MailDev - mailserver.js
+ */
+&nbsp;
+// NOTE - simplesmtp is for backwards compatibility with 0.10.x
+var simplesmtp = require('simplesmtp');
+var SMTPServer = require('smtp-server').SMTPServer;
+var MailParser = require('mailparser').MailParser;
+var events = require('events');
+var fs = require('fs');
+var os = require('os');
+var path = require('path');
+var logger = require('./logger');
+var outgoing = require('./outgoing');
+&nbsp;
+&nbsp;
+var version = process.version.replace(/v/, '')
+                             .split(/\./)
+                             .map(function(n) { return parseInt(n, 10); });
+var legacy = version[0] === 0 &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >version[1] &lt;= 10;</span>
+var defaultPort = 1025;
+var defaultHost = '0.0.0.0';
+var config = {};
+var store = [];
+var tempDir = path.join(os.tmpdir(), 'maildev', process.pid.toString());
+var eventEmitter = new events.EventEmitter();
+var smtp;
+&nbsp;
+&nbsp;
+/**
+ * Mail Server exports
+ */
+&nbsp;
+var mailServer = module.exports = {};
+&nbsp;
+mailServer.store = store;
+&nbsp;
+&nbsp;
+/**
+ * SMTP Server stream and helper functions
+ */
+&nbsp;
+// Clone object
+function clone(object){
+  return JSON.parse(JSON.stringify(object));
+}
+&nbsp;
+// Create an unique id, length 8 characters
+function makeId(){
+  var text = '';
+  var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+&nbsp;
+  for (var i = 0; i &lt; 8; i++){
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+}
+&nbsp;
+// Save an email object on stream end
+function saveEmail(id, envelope, mailObject){
+  
+  // remove stream object from attachments (fix the JSON.stringify)
+  if (mailObject.attachments instanceof Array) {
+    mailObject.attachments.forEach(function(attachment) {
+      delete attachment.stream;
+    });
+  }
+&nbsp;
+  var object = clone(mailObject);
+&nbsp;
+  object.id = id;
+  object.time = new Date();
+  object.read = false;
+  object.envelope = envelope;
+  object.source = path.join(tempDir, id + '.eml');
+&nbsp;
+  store.push(object);
+&nbsp;
+  logger.log('Saving email: ', mailObject.subject);
+&nbsp;
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (outgoing.isAutoRelayEnabled()) {
+<span class="cstat-no" title="statement not covered" >    mailServer.relayMail(object, true, <span class="fstat-no" title="function not covered" >function (err) {</span></span>
+<span class="cstat-no" title="statement not covered" >      if (err) <span class="cstat-no" title="statement not covered" >logger.error('Error when relaying email', err);</span></span>
+    });
+  }
+&nbsp;
+  eventEmitter.emit('new', object);
+}
+&nbsp;
+// Save an attachment
+function saveAttachment(attachment){
+  var output = fs.createWriteStream(path.join(tempDir, attachment.contentId));
+  attachment.stream.pipe(output);
+}
+&nbsp;
+function createSaveStream(id, emailData) {
+  var parseStream = new MailParser({
+    streamAttachments: true
+  });
+  parseStream.on('end', saveEmail.bind(null, id, emailData));
+  parseStream.on('attachment', saveAttachment);
+  return parseStream;
+}
+&nbsp;
+function createRawStream(id) {
+  return fs.createWriteStream(path.join(tempDir, id + '.eml'));
+}
+&nbsp;
+// Legacy methods are used with the Node 0.10 compatible smtpserver
+<span class="fstat-no" title="function not covered" >function handleLegacyDataStream(connection) {</span>
+<span class="cstat-no" title="statement not covered" >  var id = makeId();</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  connection.saveStream = createSaveStream(id, {</span>
+    from: connection.from,
+    to: connection.to,
+    host: connection.host,
+    remoteAddress: connection.remoteAddress
+  });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  connection.saveRawStream = createRawStream(id);</span>
+}
+&nbsp;
+<span class="fstat-no" title="function not covered" >function handleLegacyChunk(connection, chunk) {</span>
+<span class="cstat-no" title="statement not covered" >  connection.saveStream.write(chunk);</span>
+<span class="cstat-no" title="statement not covered" >  connection.saveRawStream.write(chunk);</span>
+}
+&nbsp;
+<span class="fstat-no" title="function not covered" >function handleLegacyDataStreamEnd(connection, done) {</span>
+<span class="cstat-no" title="statement not covered" >  connection.saveStream.end();</span>
+<span class="cstat-no" title="statement not covered" >  connection.saveRawStream.end();</span>
+  // ABC is the queue id to be advertised to the client
+  // There is no current significance to this.
+<span class="cstat-no" title="statement not covered" >  done(null, 'ABC');</span>
+}
+&nbsp;
+function handleDataStream(stream, session, callback) {
+  var id = makeId();
+&nbsp;
+  session.saveStream = createSaveStream(id, {
+    from: session.envelope.mailFrom,
+    to: session.envelope.rcptTo,
+    host: session.hostNameAppearsAs,
+    remoteAddress: session.remoteAddress
+  });
+&nbsp;
+  session.saveRawStream = createRawStream(id);
+&nbsp;
+  stream.pipe(session.saveStream);
+  stream.pipe(session.saveRawStream);
+&nbsp;
+  stream.on('end', function(){
+    session.saveRawStream.end();
+    callback(null, 'Message queued as ' + id);
+  });
+}
+&nbsp;
+&nbsp;
+/**
+ * Delete everything in the temp folder
+ */
+&nbsp;
+function clearTempFolder(){
+&nbsp;
+  fs.readdir(tempDir, function(err, files){
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (err) <span class="cstat-no" title="statement not covered" >throw err;</span>
+&nbsp;
+    files.forEach(function(file){
+      fs.unlink( path.join(tempDir, file), function(err) {
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (err) <span class="cstat-no" title="statement not covered" >throw err;</span>
+      });
+    });
+  });
+}
+&nbsp;
+&nbsp;
+/**
+ * Delete a single email's attachments
+ */
+&nbsp;
+<span class="fstat-no" title="function not covered" >function deleteAttachments(attachments) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  attachments.forEach(<span class="fstat-no" title="function not covered" >function(attachment){</span></span>
+<span class="cstat-no" title="statement not covered" >    fs.unlink( path.join(tempDir, attachment.contentId), <span class="fstat-no" title="function not covered" >function (err) {</span></span>
+<span class="cstat-no" title="statement not covered" >      if (err) <span class="cstat-no" title="statement not covered" >logger.error(err);</span></span>
+    });
+  });
+}
+&nbsp;
+&nbsp;
+/**
+ * Create temp folder
+ */
+&nbsp;
+function createTempFolder() {
+&nbsp;
+  if (fs.existsSync(tempDir)) {
+    clearTempFolder();
+    return;
+  }
+&nbsp;
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (!fs.existsSync(path.dirname(tempDir))) {
+<span class="cstat-no" title="statement not covered" >    fs.mkdirSync(path.dirname(tempDir));</span>
+<span class="cstat-no" title="statement not covered" >    logger.log('Temporary directory created at %s', path.dirname(tempDir));</span>
+  }
+&nbsp;
+  <span class="missing-if-branch" title="else path not taken" >E</span>if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir);
+    logger.log('Temporary directory created at %s', tempDir);
+  }
+}
+&nbsp;
+/**
+ * Authorize callback for smtp server
+ */
+&nbsp;
+function authorizeUser(auth, session, callback) {
+  var username = auth.username;
+  var password = auth.password;
+&nbsp;
+  // conn, username, password, callback
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (legacy) {
+<span class="cstat-no" title="statement not covered" >    username = arguments[1];</span>
+<span class="cstat-no" title="statement not covered" >    password = arguments[2];</span>
+<span class="cstat-no" title="statement not covered" >    callback = arguments[3];</span>
+  }
+&nbsp;
+  <span class="missing-if-branch" title="else path not taken" >E</span>if (this.options.incomingUser &amp;&amp; this.options.incomingPassword) {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (username !== this.options.incomingUser ||
+        password !== this.options.incomingPassword) {
+<span class="cstat-no" title="statement not covered" >      return callback(new Error('Invalid username or password'));</span>
+    }
+  }
+  callback(null, { user: this.options.incomingUser });
+}
+&nbsp;
+&nbsp;
+/**
+ * Create and configure the mailserver
+ */
+&nbsp;
+mailServer.create = function(port, host, user, password) {
+&nbsp;
+  // Start the server &amp; Disable DNS checking
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (legacy) {
+<span class="cstat-no" title="statement not covered" >    smtp = simplesmtp.createServer({</span>
+      disableDNSValidation: true,
+      requireAuthentication: !!(user &amp;&amp; password),
+      incomingUser: user,
+      incomingPassword: password
+    });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    smtp.on('startData', handleLegacyDataStream);</span>
+<span class="cstat-no" title="statement not covered" >    smtp.on('data',      handleLegacyChunk);</span>
+<span class="cstat-no" title="statement not covered" >    smtp.on('dataReady', handleLegacyDataStreamEnd);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (user &amp;&amp; password) {</span>
+<span class="cstat-no" title="statement not covered" >      smtp.on('authorizeUser', authorizeUser);</span>
+    }
+  } else {
+    smtp = new SMTPServer({
+      incomingUser: user,
+      incomingPassword: password,
+      onAuth: authorizeUser,
+      onData: handleDataStream,
+      logger: false,
+      disabledCommands: !!(user &amp;&amp; password)?['STARTTLS']:['AUTH']
+    });
+  }
+&nbsp;
+  // Setup temp folder for attachments
+  createTempFolder();
+&nbsp;
+  mailServer.port = port || defaultPort;
+  mailServer.host = host || defaultHost;
+};
+&nbsp;
+&nbsp;
+/**
+ * Start the mailServer
+ */
+&nbsp;
+mailServer.listen = function(callback) {
+&nbsp;
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof callback !== 'function') <span class="cstat-no" title="statement not covered" >callback = null;</span>
+&nbsp;
+  // Listen on the specified port
+  smtp.listen(mailServer.port, mailServer.host, function(err) {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (err) {
+<span class="cstat-no" title="statement not covered" >      if (callback) {</span>
+<span class="cstat-no" title="statement not covered" >        callback(err);</span>
+      } else {
+<span class="cstat-no" title="statement not covered" >        throw err;</span>
+      }
+    }
+&nbsp;
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (callback) callback();
+&nbsp;
+    logger.info('MailDev SMTP Server running at %s:%s', mailServer.host, mailServer.port);
+  });
+};
+&nbsp;
+&nbsp;
+/**
+ * Stop the mailserver
+ */
+&nbsp;
+mailServer.end = function(callback) {
+  var method = legacy ? <span class="branch-0 cbranch-no" title="branch not covered" >'end' </span>: 'close';
+  smtp[method](callback);
+  outgoing.close();
+};
+&nbsp;
+&nbsp;
+/**
+ * Extend Event Emitter methods
+ * events:
+ *   'new' - emitted when new email has arrived
+ */
+&nbsp;
+mailServer.on                 = eventEmitter.on.bind(eventEmitter);
+mailServer.emit               = eventEmitter.emit.bind(eventEmitter);
+mailServer.removeListener     = eventEmitter.removeListener.bind(eventEmitter);
+mailServer.removeAllListeners = eventEmitter.removeAllListeners.bind(eventEmitter);
+&nbsp;
+&nbsp;
+/**
+ * Get an email by id
+ */
+&nbsp;
+mailServer.getEmail = function(id, done){
+&nbsp;
+  var email = store.filter(function(element){
+    return element.id === id;
+  })[0];
+&nbsp;
+  <span class="missing-if-branch" title="else path not taken" >E</span>if (email) {
+    done(null, email);
+  } else {
+<span class="cstat-no" title="statement not covered" >    done(new Error('Email was not found'));</span>
+  }
+};
+&nbsp;
+/**
+ * Returns a readable stream of the raw email
+ */
+&nbsp;
+mailServer.getRawEmail = <span class="fstat-no" title="function not covered" >function(id, done){</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  mailServer.getEmail(id, <span class="fstat-no" title="function not covered" >function(err, email){</span></span>
+<span class="cstat-no" title="statement not covered" >    if (err) <span class="cstat-no" title="statement not covered" >return done(err);</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    done(null, fs.createReadStream( path.join(tempDir, id + '.eml') ) );</span>
+  });
+};
+&nbsp;
+/**
+ * Returns the html of a given email
+ */
+&nbsp;
+mailServer.getEmailHTML = function(id, baseUrl, done) {
+&nbsp;
+  if (!done &amp;&amp; typeof baseUrl === 'function') {
+    done = baseUrl;
+    baseUrl = null;
+  }
+&nbsp;
+  if (baseUrl)
+    baseUrl = '//' + baseUrl;
+&nbsp;
+  mailServer.getEmail(id, function(err, email) {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (err) <span class="cstat-no" title="statement not covered" >return done(err);</span>
+&nbsp;
+    var html = email.html;
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!email.attachments)
+<span class="cstat-no" title="statement not covered" >      return done(null, html);</span>
+&nbsp;
+    var embeddedAttachments = email.attachments.filter(function(attachment) {
+      return attachment.contentId;
+    });
+&nbsp;
+    var getFileUrl = function(id, baseUrl, filename) {
+      return (baseUrl || '') + '/email/' + id + '/attachment/' + filename;
+    };
+&nbsp;
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (embeddedAttachments.length) {
+      embeddedAttachments.forEach(function(attachment) {
+        var regex = new RegExp('src=("|\')cid:' + attachment.contentId  + '("|\')', 'g');
+        var replacement = 'src="' + getFileUrl(id, baseUrl, attachment.generatedFileName) + '"';
+        html = html.replace(regex, replacement);
+      });
+    }
+&nbsp;
+    done(null, html);
+  });
+};
+&nbsp;
+/**
+ * Get all email
+ */
+&nbsp;
+mailServer.getAllEmail = function(done){
+  done(null, store);
+};
+&nbsp;
+&nbsp;
+/**
+ * Delete an email by id
+ */
+&nbsp;
+mailServer.deleteEmail = <span class="fstat-no" title="function not covered" >function(id, done){</span>
+<span class="cstat-no" title="statement not covered" >  var email      = null;</span>
+<span class="cstat-no" title="statement not covered" >  var emailIndex = null;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  store.forEach(<span class="fstat-no" title="function not covered" >function(element, index){</span></span>
+<span class="cstat-no" title="statement not covered" >    if (element.id === id){</span>
+<span class="cstat-no" title="statement not covered" >      email = element;</span>
+<span class="cstat-no" title="statement not covered" >      emailIndex = index;</span>
+    }
+  });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if (emailIndex === null){</span>
+<span class="cstat-no" title="statement not covered" >    return done(new Error('Email not found'));</span>
+  }
+&nbsp;
+  //delete raw email
+<span class="cstat-no" title="statement not covered" >  fs.unlink( path.join(tempDir, id + '.eml'), <span class="fstat-no" title="function not covered" >function (err) {</span></span>
+<span class="cstat-no" title="statement not covered" >    if (err) {</span>
+<span class="cstat-no" title="statement not covered" >      logger.error(err);</span>
+    } else {
+<span class="cstat-no" title="statement not covered" >      eventEmitter.emit('delete', {id:id, index:emailIndex});</span>
+    }
+  });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if (email.attachments){</span>
+<span class="cstat-no" title="statement not covered" >    deleteAttachments(email.attachments);</span>
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  logger.warn('Deleting email - %s', email.subject);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  store.splice(emailIndex, 1);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  done(null, true);</span>
+};
+&nbsp;
+&nbsp;
+/**
+ * Delete all emails in the store
+ */
+&nbsp;
+mailServer.deleteAllEmail = <span class="fstat-no" title="function not covered" >function(done){</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  logger.warn('Deleting all email');</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  clearTempFolder();</span>
+<span class="cstat-no" title="statement not covered" >  store.length = 0;</span>
+<span class="cstat-no" title="statement not covered" >  eventEmitter.emit('delete', {id:'all'});</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  done(null, true);</span>
+};
+&nbsp;
+&nbsp;
+/**
+ * Returns the content type and a readable stream of the file
+ */
+&nbsp;
+mailServer.getEmailAttachment = <span class="fstat-no" title="function not covered" >function(id, filename, done){</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  mailServer.getEmail(id, <span class="fstat-no" title="function not covered" >function(err, email){</span></span>
+<span class="cstat-no" title="statement not covered" >    if (err) <span class="cstat-no" title="statement not covered" >return done(err);</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (!email.attachments || !email.attachments.length) {</span>
+<span class="cstat-no" title="statement not covered" >      return done(new Error('Email has no attachments'));</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    var match = email.attachments.filter(<span class="fstat-no" title="function not covered" >function(attachment){</span></span>
+<span class="cstat-no" title="statement not covered" >      return attachment.generatedFileName === filename;</span>
+    })[0];
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (!match) {</span>
+<span class="cstat-no" title="statement not covered" >      return done(new Error('Attachment not found'));</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    done(null, match.contentType, fs.createReadStream( path.join(tempDir, match.contentId) ) );</span>
+&nbsp;
+  });
+&nbsp;
+};
+&nbsp;
+/**
+ * Setup outgoing
+ */
+mailServer.setupOutgoing = function(host, port, user, pass, secure) {
+  outgoing.setup(host, port, user, pass, secure);
+};
+&nbsp;
+mailServer.isOutgoingEnabled = <span class="fstat-no" title="function not covered" >function() {</span>
+<span class="cstat-no" title="statement not covered" >  return outgoing.isEnabled();</span>
+};
+&nbsp;
+mailServer.getOutgoingHost = function() {
+  return outgoing.getOutgoingHost();
+};
+&nbsp;
+&nbsp;
+/**
+ * Set Auto Relay Mode, automatic send email to recipient
+ */
+&nbsp;
+mailServer.setAutoRelayMode = <span class="fstat-no" title="function not covered" >function(enabled, rules) {</span>
+<span class="cstat-no" title="statement not covered" >  outgoing.setAutoRelayMode(enabled, rules);</span>
+};
+&nbsp;
+/**
+ * Relay a given email, accepts a mail id or a mail object
+ */
+&nbsp;
+mailServer.relayMail = <span class="fstat-no" title="function not covered" >function(idOrMailObject, isAutoRelay, done) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  if (!outgoing.isEnabled())</span>
+<span class="cstat-no" title="statement not covered" >    return done(new Error('Outgoing mail not configured'));</span>
+&nbsp;
+  // isAutoRelay is an option argument
+<span class="cstat-no" title="statement not covered" >  if (typeof isAutoRelay === 'function') {</span>
+<span class="cstat-no" title="statement not covered" >    done = isAutoRelay;</span>
+<span class="cstat-no" title="statement not covered" >    isAutoRelay = false;</span>
+  }
+&nbsp;
+  // If we receive a email id, get the email object
+<span class="cstat-no" title="statement not covered" >  if (typeof idOrMailObject === 'string') {</span>
+<span class="cstat-no" title="statement not covered" >    mailServer.getEmail(idOrMailObject, <span class="fstat-no" title="function not covered" >function(err, email) {</span></span>
+<span class="cstat-no" title="statement not covered" >      if (err) <span class="cstat-no" title="statement not covered" >return done(err);</span></span>
+<span class="cstat-no" title="statement not covered" >      mailServer.relayMail(email, done);</span>
+    });
+<span class="cstat-no" title="statement not covered" >    return;</span>
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  var mail = idOrMailObject;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  mailServer.getRawEmail(mail.id, <span class="fstat-no" title="function not covered" >function(err, rawEmailStream) {</span></span>
+<span class="cstat-no" title="statement not covered" >    if (err) {</span>
+<span class="cstat-no" title="statement not covered" >      logger.error('Mail Stream Error: ', err);</span>
+<span class="cstat-no" title="statement not covered" >      return done(err);</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    outgoing.relayMail(mail, rawEmailStream, isAutoRelay, done);</span>
+  });
+};
+&nbsp;
+/**
+ * Download a given email
+ */
+mailServer.getEmailEml = <span class="fstat-no" title="function not covered" >function(id, done) {</span>
+<span class="cstat-no" title="statement not covered" >  mailServer.getEmail(id, <span class="fstat-no" title="function not covered" >function(err, email){</span></span>
+<span class="cstat-no" title="statement not covered" >    if (err) <span class="cstat-no" title="statement not covered" >return done(err);</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    var filename = email.id + '.eml';</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    done(null, 'message/rfc822', filename, fs.createReadStream(path.join(tempDir, id + '.eml')));</span>
+  });
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Aug 13 2016 11:54:38 GMT-0400 (EDT)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+#!/bin/bash
+./bin/maildev \
+  --outgoing-host smtp.gmail.com \
+  --outgoing-secure \
+  --outgoing-user 'daniel.j.farrelly@gmail.com' \
+  --outgoing-pass 'vdjjuozsbqjlnjzd'

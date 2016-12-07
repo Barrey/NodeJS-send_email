@@ -1,0 +1,22 @@
+{
+  "name": "bee-queues",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "golive": "cross-env NODE_ENV=development forever start -a --uid \"maildev\" maildev.js && forever start -a --uid \"ui\" ui.js",
+    "forever": "forever"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "bee-queue": "^0.3.0",
+    "bee-queue-ui": "^0.2.2",
+    "cross-env": "^3.1.3",
+    "forever": "^0.15.3",
+    "forever-monitor": "^1.7.1",
+    "maildev": "^0.14.0",
+    "nodemailer": "^2.6.4"
+  }
+}
